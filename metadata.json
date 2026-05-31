@@ -1,0 +1,6 @@
+{
+  "name": "Andrey's Meme Stage",
+  "description": "An interactive theatre simulator, sound synthesizer, and meme generator themed around Andrey's legendary backstage staging.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
