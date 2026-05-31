@@ -8,7 +8,9 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -118,16 +120,90 @@ fun MemeStageScreen() {
             ),
         contentAlignment = Alignment.Center
     ) {
+        // Grid pattern background
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            val gridSize = 60f
+            val cols = (size.width / gridSize).toInt()
+            val rows = (size.height / gridSize).toInt()
+            
+            val gridColor = Color(0xFF550000).copy(alpha = 0.2f)
+            
+            for (i in 0..cols) {
+                drawLine(
+                    color = gridColor,
+                    start = Offset(i * gridSize, 0f),
+                    end = Offset(i * gridSize, size.height),
+                    strokeWidth = 1f
+                )
+            }
+            for (i in 0..rows) {
+                drawLine(
+                    color = gridColor,
+                    start = Offset(0f, i * gridSize),
+                    end = Offset(size.width, i * gridSize),
+                    strokeWidth = 1f
+                )
+            }
+        }
+        
         Box(modifier = Modifier.fillMaxSize().background(phonkTouchesColor))
         Box(modifier = Modifier.fillMaxSize().background(evilGlowColor))
         
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+                .systemBarsPadding()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 24.dp, vertical = 32.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            // Header stats
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "SYS.NEXUS [ENGAGED]",
+                    color = Color.Red.copy(alpha = 0.6f),
+                    fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                val statusText = if (isPhonking) "PHONK_MODE" else if (isEvilLaughing) "EVIL_MODE" else "STANDBY"
+                val statusColor = if (isPhonking) Color.Yellow else if (isEvilLaughing) Color.Red else Color.Green
+                
+                Text(
+                    text = "STATUS: $statusText",
+                    color = statusColor.copy(alpha = 0.8f),
+                    fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold,
+                    style = androidx.compose.ui.text.TextStyle(
+                        shadow = Shadow(color = statusColor, blurRadius = 8f)
+                    )
+                )
+            }
+            
+            Spacer(modifier = Modifier.height(24.dp))
+            
+            // Cool cyber Title
+            Text(
+                text = "T R O L L  S Y N T H",
+                color = Color.White,
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Black,
+                fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace,
+                style = androidx.compose.ui.text.TextStyle(
+                    shadow = Shadow(
+                        color = Color.Red,
+                        offset = Offset(0f, 0f),
+                        blurRadius = 20f
+                    )
+                )
+            )
+            
+            Spacer(modifier = Modifier.height(32.dp))
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -137,18 +213,18 @@ fun MemeStageScreen() {
                             scaleX = evilScale
                             scaleY = evilScale
                             rotationZ = evilRotation
-                            shadowElevation = 40f
+                            shadowElevation = 24f
                             ambientShadowColor = Color.Red
                             spotShadowColor = Color.Red
                         } else if (isPhonking) {
                             scaleX = phonkScale
                             scaleY = phonkScale
                             translationX = phonkShake
-                            shadowElevation = 50f
+                            shadowElevation = 24f
                             ambientShadowColor = Color.Yellow
                             spotShadowColor = Color.Yellow
                         } else {
-                            shadowElevation = 20f
+                            shadowElevation = 12f
                             ambientShadowColor = Color.Black
                         }
                     }
@@ -159,12 +235,24 @@ fun MemeStageScreen() {
                     )
                     .clip(RoundedCornerShape(16.dp))
             ) {
-                Image(
-                    painter = painterResource(id = com.example.R.drawable.img_meme_stage),
-                    contentDescription = "Meme Stage",
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
-                )
+                val context = androidx.compose.ui.platform.LocalContext.current
+                val imageResId = remember {
+                    var resId = context.resources.getIdentifier("img_andrey", "drawable", context.packageName)
+                    if (resId == 0) {
+                        resId = context.resources.getIdentifier("img_meme_stage", "drawable", context.packageName)
+                    }
+                    resId
+                }
+                
+                if (imageResId != 0) {
+                    coil.compose.AsyncImage(
+                        model = imageResId,
+                        contentDescription = "Meme Stage",
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+
                 
                 if (isPhonking) {
                     // HUD Overlays
@@ -294,7 +382,33 @@ fun MemeStageScreen() {
             
             Spacer(modifier = Modifier.height(48.dp))
             
-            Button(
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color(0xFF0A0000), RoundedCornerShape(20.dp))
+                    .border(1.dp, Color(0xFF440000), RoundedCornerShape(20.dp))
+                    .padding(24.dp)
+            ) {
+                Column {
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(bottom = 20.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = "// OVERRIDE SCRIPTS", 
+                            color = Color.Red.copy(alpha = 0.4f), 
+                            fontSize = 12.sp, 
+                            fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace
+                        )
+                        Text(
+                            text = "V 2.0.4", 
+                            color = Color.Red.copy(alpha = 0.4f), 
+                            fontSize = 12.sp, 
+                            fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace
+                        )
+                    }
+            
+                    Button(
                 onClick = {
                     if (!isEvilLaughing && !isPhonking) {
                         isEvilLaughing = true
@@ -382,6 +496,8 @@ fun MemeStageScreen() {
                         )
                     )
                 )
+            }
+                }
             }
         }
     }

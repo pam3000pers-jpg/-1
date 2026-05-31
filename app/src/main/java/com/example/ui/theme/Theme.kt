@@ -40,8 +40,8 @@ private val LightColorScheme =
 
 @Composable
 fun MyApplicationTheme(
-  darkTheme: Boolean = isSystemInDarkTheme(),
-  // Force our customized theater theme for the full immersive experience
+  // Always force dark theme for the stage aesthetic
+  darkTheme: Boolean = true,
   dynamicColor: Boolean = false,
   content: @Composable () -> Unit,
 ) {
